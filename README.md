@@ -28,7 +28,7 @@ mamba activate spotify
 Create a playlist of an artist's top daily streamed songs (from kworb.net):
 
 ```bash
-python playlist.py "Aphex Twin" 20
+python -m spotify.playlist "Aphex Twin" 20
 ```
 
 ### Period mode
@@ -36,9 +36,9 @@ python playlist.py "Aphex Twin" 20
 Create a playlist of top daily streamed songs for a year, decade, or all time:
 
 ```bash
-python playlist.py 2020 30
-python playlist.py 1960 25
-python playlist.py all_time 50
+python -m spotify.playlist 2020 30
+python -m spotify.playlist 1960 25
+python -m spotify.playlist all_time 50
 ```
 
 ### JSON mode
@@ -46,7 +46,7 @@ python playlist.py all_time 50
 Create a playlist from a JSON file:
 
 ```bash
-python playlist.py my_playlist.json
+python -m spotify.playlist my_playlist.json
 ```
 
 JSON format:

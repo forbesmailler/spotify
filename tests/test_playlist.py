@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from bs4 import BeautifulSoup
 
-from playlist import (
+from spotify.playlist import (
     _authenticate,
     add_tracks_to_playlist,
     build_kworb_artist_url,
@@ -308,7 +308,7 @@ class TestAuthenticate:
 
 
 class TestFetchPage:
-    @patch("playlist.requests.get")
+    @patch("spotify.playlist.requests.get")
     def test_returns_soup(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.text = "<html><body><p>Hello</p></body></html>"
@@ -321,25 +321,25 @@ class TestFetchPage:
 
 
 class TestMain:
-    @patch("playlist.create_artist_playlist")
+    @patch("spotify.playlist.create_artist_playlist")
     def test_artist_mode(self, mock_create):
         with patch.object(sys, "argv", ["playlist.py", "Aphex Twin", "20"]):
             main()
         mock_create.assert_called_once_with("Aphex Twin", 20)
 
-    @patch("playlist.create_period_playlist")
+    @patch("spotify.playlist.create_period_playlist")
     def test_period_mode(self, mock_create):
         with patch.object(sys, "argv", ["playlist.py", "2020", "30"]):
             main()
         mock_create.assert_called_once_with("2020", 30)
 
-    @patch("playlist.create_period_playlist")
+    @patch("spotify.playlist.create_period_playlist")
     def test_all_time_mode(self, mock_create):
         with patch.object(sys, "argv", ["playlist.py", "all_time", "50"]):
             main()
         mock_create.assert_called_once_with("all_time", 50)
 
-    @patch("playlist.create_json_playlist")
+    @patch("spotify.playlist.create_json_playlist")
     def test_json_mode(self, mock_create):
         with patch.object(sys, "argv", ["playlist.py", "my_playlist.json"]):
             main()
@@ -357,11 +357,11 @@ class TestMain:
 
 
 class TestCreateJsonPlaylist:
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.search_track")
-    @patch("playlist.create_playlist")
-    @patch("playlist.add_tracks_to_playlist")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.search_track")
+    @patch("spotify.playlist.create_playlist")
+    @patch("spotify.playlist.add_tracks_to_playlist")
     def test_creates_playlist(
         self, mock_add, mock_create_pl, mock_search, mock_auth, mock_client, tmp_path
     ):
@@ -391,9 +391,9 @@ class TestCreateJsonPlaylist:
             sp, "pl1", ["spotify:track:aaa", "spotify:track:ccc"]
         )
 
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.search_track")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.search_track")
     def test_no_tracks_found(
         self, mock_search, mock_auth, mock_client, tmp_path, capsys
     ):
@@ -412,8 +412,8 @@ class TestCreateJsonPlaylist:
 
 
 class TestGetSpotifyClient:
-    @patch("playlist.SpotifyOAuth")
-    @patch("playlist.spotipy.Spotify")
+    @patch("spotify.playlist.SpotifyOAuth")
+    @patch("spotify.playlist.spotipy.Spotify")
     def test_returns_client(self, mock_spotify, mock_oauth):
         mock_auth = MagicMock()
         mock_oauth.return_value = mock_auth
@@ -428,13 +428,13 @@ class TestGetSpotifyClient:
 
 
 class TestCreateArtistPlaylist:
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.get_artist_id")
-    @patch("playlist.fetch_page")
-    @patch("playlist.parse_artist_songs")
-    @patch("playlist.create_playlist")
-    @patch("playlist.add_tracks_to_playlist")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.get_artist_id")
+    @patch("spotify.playlist.fetch_page")
+    @patch("spotify.playlist.parse_artist_songs")
+    @patch("spotify.playlist.create_playlist")
+    @patch("spotify.playlist.add_tracks_to_playlist")
     def test_full_flow(
         self,
         mock_add,
@@ -463,11 +463,11 @@ class TestCreateArtistPlaylist:
         mock_add.assert_called_once_with(sp, "pl1", ["spotify:track:aaa"])
         assert "Done!" in capsys.readouterr().out
 
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.get_artist_id")
-    @patch("playlist.fetch_page")
-    @patch("playlist.parse_artist_songs")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.get_artist_id")
+    @patch("spotify.playlist.fetch_page")
+    @patch("spotify.playlist.parse_artist_songs")
     def test_no_songs(
         self, mock_parse, mock_fetch, mock_aid, mock_auth, mock_client, capsys
     ):
@@ -483,13 +483,13 @@ class TestCreateArtistPlaylist:
 
 
 class TestCreatePeriodPlaylist:
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.fetch_page")
-    @patch("playlist.parse_songs_chart")
-    @patch("playlist.search_track")
-    @patch("playlist.create_playlist")
-    @patch("playlist.add_tracks_to_playlist")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.fetch_page")
+    @patch("spotify.playlist.parse_songs_chart")
+    @patch("spotify.playlist.search_track")
+    @patch("spotify.playlist.create_playlist")
+    @patch("spotify.playlist.add_tracks_to_playlist")
     def test_full_flow(
         self,
         mock_add,
@@ -521,10 +521,10 @@ class TestCreatePeriodPlaylist:
         mock_add.assert_called_once_with(sp, "pl1", ["spotify:track:aaa"])
         assert "Done!" in capsys.readouterr().out
 
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.fetch_page")
-    @patch("playlist.parse_songs_chart")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.fetch_page")
+    @patch("spotify.playlist.parse_songs_chart")
     def test_no_entries(self, mock_parse, mock_fetch, mock_auth, mock_client, capsys):
         sp = MagicMock()
         mock_client.return_value = sp
@@ -535,11 +535,11 @@ class TestCreatePeriodPlaylist:
 
         assert "No songs found" in capsys.readouterr().out
 
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.fetch_page")
-    @patch("playlist.parse_songs_chart")
-    @patch("playlist.search_track")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.fetch_page")
+    @patch("spotify.playlist.parse_songs_chart")
+    @patch("spotify.playlist.search_track")
     def test_no_tracks_found(
         self,
         mock_search,
@@ -559,13 +559,13 @@ class TestCreatePeriodPlaylist:
 
         assert "No tracks found" in capsys.readouterr().out
 
-    @patch("playlist.get_spotify_client")
-    @patch("playlist._authenticate")
-    @patch("playlist.fetch_page")
-    @patch("playlist.parse_songs_chart")
-    @patch("playlist.search_track")
-    @patch("playlist.create_playlist")
-    @patch("playlist.add_tracks_to_playlist")
+    @patch("spotify.playlist.get_spotify_client")
+    @patch("spotify.playlist._authenticate")
+    @patch("spotify.playlist.fetch_page")
+    @patch("spotify.playlist.parse_songs_chart")
+    @patch("spotify.playlist.search_track")
+    @patch("spotify.playlist.create_playlist")
+    @patch("spotify.playlist.add_tracks_to_playlist")
     def test_all_time_label(
         self,
         mock_add,

@@ -4,16 +4,16 @@ from invoke import task
 @task
 def format(c):
     """Format code with ruff."""
-    c.run("ruff format .")
-    c.run("ruff check --fix --unsafe-fixes .")
+    c.run("ruff format --line-length 88 .")
+    c.run("ruff check --line-length 88 --fix --unsafe-fixes .")
 
 
 @task
 def test(c, cov=True):
     """Run tests."""
-    cmd = "python -m pytest"
+    cmd = "python -m pytest tests"
     if cov:
-        cmd += " --cov=. --cov-report=term-missing"
+        cmd += " --cov=spotify --cov-report=term-missing"
     c.run(cmd, pty=False)
 
 
